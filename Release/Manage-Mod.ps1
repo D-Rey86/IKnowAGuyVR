@@ -2,8 +2,7 @@
 [CmdletBinding()]
 param(
     [ValidateSet('Install','Rollback','Uninstall','Disable','Enable')][string]$Action='Install',
-    [string]$GamePath,
-    [string]$DependencyCache=(Join-Path $env:LOCALAPPDATA 'IKnowAGuyVR/Downloads')
+    [string]$GamePath
 )
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version 2
@@ -78,22 +77,6 @@ function SetBoot([bool]$Enabled){
     else{return}
     $source=Join-Path $work 'boot.config';[IO.File]::WriteAllText($source,$text,[Text.UTF8Encoding]::new($false));AddFile $boot $source
 }
-function Download($Dependency){
-    New-Item -ItemType Directory -Path $DependencyCache -Force | Out-Null
-    $file=ChildPath $DependencyCache $Dependency.Archive
-    if(!(Test-Path -LiteralPath $file)){
-        Write-Output "Downloading $($Dependency.Url)"
-        [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
-        $partial=$file+'.'+[Guid]::NewGuid().ToString('N')+'.partial'
-        try{
-            Invoke-WebRequest -UseBasicParsing -Uri $Dependency.Url -OutFile $partial -TimeoutSec 180
-            if((Hash $partial) -ne $Dependency.SHA256){throw 'Downloaded archive failed its SHA256 check.'}
-            Move-Item -LiteralPath $partial -Destination $file
-        }finally{if(Test-Path -LiteralPath $partial){Remove-Item -LiteralPath $partial}}
-    }
-    if((Hash $file) -ne $Dependency.SHA256){throw "Dependency hash mismatch: $file. No game files have been changed."}
-    return $file
-}
 try{
     if($Action -in @('Install','Enable')){
         foreach($binary in $package.GameBinaries.PSObject.Properties){
@@ -102,38 +85,22 @@ try{
     }
     if($Action -eq 'Install'){
         $deps=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'dependencies.json') -Raw|ConvertFrom-Json
+        $replaced=@($plugin,'I Know a Guy_Data/UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json')
         foreach($entry in $package.Payload){
             $src=ChildPath (Join-Path $PSScriptRoot 'payload') $entry.Path
             if((Hash $src) -ne $entry.SHA256){throw "Package checksum mismatch: $($entry.Path)"}
-            AddFile $entry.Path $src
+            if($entry.Path -eq 'doorstop_config.ini' -and (Test-Path -LiteralPath (ChildPath $game $entry.Path))){continue}
+            AddFile $entry.Path $src ($entry.Path -notin $replaced)
         }
-        $bep=Download $deps.BepInEx;$bepDir=Join-Path $work 'bep'
-        Expand-Archive -LiteralPath $bep -DestinationPath $bepDir
-        foreach($dir in @('BepInEx/core','dotnet')){
-            Get-ChildItem -LiteralPath (Join-Path $bepDir $dir) -Recurse -File | ForEach-Object {
-                AddFile $_.FullName.Substring($bepDir.Length+1) $_.FullName $true
-            }
-        }
-        foreach($name in @('winhttp.dll','.doorstop_version')){AddFile $name (Join-Path $bepDir $name) $true}
         $doorstop=ChildPath $game 'doorstop_config.ini'
         if(Test-Path -LiteralPath $doorstop){
             $ini=Get-Content -LiteralPath $doorstop -Raw
             foreach($pattern in @('(?m)^enabled\s*=\s*true\s*$','(?m)^target_assembly\s*=\s*BepInEx[\\/]core[\\/]BepInEx.Unity.IL2CPP.dll\s*$','(?m)^coreclr_path\s*=\s*dotnet[\\/]coreclr.dll\s*$','(?m)^corlib_dir\s*=\s*dotnet\s*$','(?m)^boot_config_override\s*=\s*$')){
                 if($ini -notmatch $pattern){throw 'Existing doorstop_config.ini is incompatible and was preserved.'}
             }
-        }else{AddFile 'doorstop_config.ini' (Join-Path $bepDir 'doorstop_config.ini')}
+        }
         if($package.Role -eq 'VR'){
             if(Test-Path -LiteralPath (ChildPath $game 'BepInEx/plugins/IKnowAGuyVR.Companion.dll')){throw 'Remove the companion plugin before installing VR; VR already includes it.'}
-            $xr=Download $deps.OpenXR;$xrDir=Join-Path $work 'xr';New-Item -ItemType Directory -Path $xrDir|Out-Null
-            & tar.exe -xzf $xr -C $xrDir 'package/Runtime/windows/x64/UnityOpenXR.dll' 'package/RuntimeLoaders/windows/x64/openxr_loader.dll' 'package/LICENSE.md' 'package/Third Party Notices.md'
-            if($LASTEXITCODE -ne 0){throw 'Could not extract the pinned Unity OpenXR package (Windows tar.exe is required).'}
-            $provider=Join-Path $xrDir 'package/Runtime/windows/x64/UnityOpenXR.dll'
-            $loader=Join-Path $xrDir 'package/RuntimeLoaders/windows/x64/openxr_loader.dll'
-            if((Hash $provider) -ne $deps.OpenXR.ProviderSHA256 -or (Hash $loader) -ne $deps.OpenXR.LoaderSHA256){throw 'Unexpected OpenXR binary identity.'}
-            AddFile 'I Know a Guy_Data/Plugins/x86_64/UnityOpenXR.dll' $provider $true
-            AddFile 'I Know a Guy_Data/Plugins/x86_64/openxr_loader.dll' $loader $true
-            AddFile '.IKnowAGuyVR/licenses/Unity-OpenXR-LICENSE.md' (Join-Path $xrDir 'package/LICENSE.md')
-            AddFile '.IKnowAGuyVR/licenses/Unity-OpenXR-Third-Party-Notices.md' (Join-Path $xrDir 'package/Third Party Notices.md')
             SetBoot $true
         }elseif((Test-Path -LiteralPath (ChildPath $game 'BepInEx/plugins/IKnowAGuyVR.SubsystemProbe.dll')) -or ((Get-Content -LiteralPath (ChildPath $game $boot) -Raw) -match 'xrsdk-pre-init-library=UnityOpenXR')){throw 'Uninstall/disable VR before installing the flatscreen companion.'}
         DeleteFile $disabled

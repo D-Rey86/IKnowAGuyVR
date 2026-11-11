@@ -15,7 +15,7 @@ namespace IKnowAGuyVR.SubsystemProbe;
 [BepInPlugin("iknowaguyvr.subsystemprobe", "I Know a Guy VR", Plugin.Version)]
 public sealed class Plugin : BasePlugin
 {
-    internal const string Version="1.0.0";
+    internal const string Version="1.0.1";
     internal static string LogPath;
     public override void Load()
     {

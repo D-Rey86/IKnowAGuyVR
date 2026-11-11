@@ -1,4 +1,10 @@
-# I Know a Guy VR 1.0.0
+# I Know a Guy VR 1.0.1
+
+**1.0.1** bundles installation dependencies in both player ZIPs. BepInEx, its .NET runtime and the Unity libraries used for first-launch interop generation are included. The VR package also includes the native OpenXR provider and loader. Both installer and manual setup use these bundled files.
+
+Fresh installation, rollback and VR gameplay UI were checked with dependency downloads blocked. The packages include the manual installation guide, motion controller reference and third-party license notices.
+
+## Initial release
 
 **1.0.0** is the first public release of I Know a Guy VR. It includes separate VR and flatscreen Companion packages, manual installation and rollback instructions, a motion controller reference, and MIT-licensed source.
 

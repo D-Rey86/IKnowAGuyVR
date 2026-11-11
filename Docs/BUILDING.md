@@ -14,12 +14,12 @@ dotnet build ModPlugin/VRCompanion/VRCompanion.csproj -c Release '-p:GameDir=H:/
 For release packages:
 
 ```powershell
-powershell.exe -NoProfile -File Tools/Build-Release.ps1 -Tag 1.0.0-local -GameDir 'H:/Games/Steam/steamapps/common/I Know a Guy'
+powershell.exe -NoProfile -File Tools/Build-Release.ps1 -Tag 1.0.1-local -GameDir 'H:/Games/Steam/steamapps/common/I Know a Guy'
 ```
 
-Use a fresh tag each time. Outputs go to `Builds/Releases/<tag>`: separate VR and Companion ZIPs, an allowlisted source ZIP, source-file hashes, artifact hashes and a build receipt. Version labels come from each plugin's source. A base Git commit alone does not identify uncommitted changes; the archived source and hashes do.
+Populate the build dependency cache with the pinned archives in `Release/dependencies.json` and the matching third-party notices. The default cache is `Tools/Downloads/release-dependencies` and can be set with `-DependencyCache`. Use a fresh tag each time. Outputs go to `Builds/Releases/<tag>`: separate VR and Companion ZIPs, an allowlisted source ZIP, source-file hashes, artifact hashes and a build receipt. Version labels come from each plugin's source. A base Git commit alone does not identify uncommitted changes; the archived source and hashes do.
 
-Normal Release builds exclude the optional gameplay audit classes. `-p:DiagnosticBuild=true` is for private research only; never package that assembly as a normal release. Package creation copies only the shipping plugin, installer, manifest and player documentation. No simulator, capture preloader, test harness or personal configuration is shipped.
+Normal Release builds exclude the optional gameplay audit classes. `-p:DiagnosticBuild=true` is for private research only; never package that assembly as a normal release. Package creation copies only the shipping plugin, bundled dependencies, installer, manifest and player documentation. No simulator, capture preloader, test harness or personal configuration is shipped.
 
 Standalone checks live under `Tools/*Checks` and require a .NET 9 SDK for the projects targeting net9.0. For example, run `dotnet run --project Tools/WristSettingsChecks -c Release '-p:GameDir=H:/Games/Steam/steamapps/common/I Know a Guy'`. They verify math, settings migration, report handling and network serialization; they do not establish native gameplay or visual correctness. `Tools/ReleaseChecks/Check-Package.ps1` exercises installer transitions and failure cases against disposable fixtures using the supported game binaries. Its WorkRoot must be new and on the same volume as ReferenceGame because fixtures hardlink the immutable game binaries; never launch those fixtures.
 

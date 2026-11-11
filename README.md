@@ -2,7 +2,7 @@
 
 An unofficial PCVR mod for **I Know a Guy: Shady Life Simulator**, with stereo OpenXR rendering, motion controls, physical item handling, and an interactive wrist dashboard.
 
-**Version 1.0.0** is the first public release.
+**Version 1.0.1** includes the loader and first-launch dependencies inside each release ZIP.
 
 ## Features
 
@@ -22,7 +22,7 @@ Open **Settings > VR** for configuration and the motion controller reference. [C
 
 Download the **VR** package to play in VR, or the **Companion** package to see other players' tracked movement while playing flatscreen. Install one package per player. Extract the entire ZIP, close the game, run `Install.cmd`, and select the folder containing `I Know a Guy.exe`. [GitHub releases](https://github.com/D-Rey86/IKnowAGuyVR/releases)
 
-The installer checks the supported game version, downloads pinned dependencies from their official sources, and backs up replaced files. It preserves saves and settings. See [installation, updates, disabling and rollback](Docs/INSTALLATION.md).
+The installer checks the supported game version, installs the dependencies from the ZIP, and backs up replaced files. It preserves saves and settings. See [installation, updates, disabling and rollback](Docs/INSTALLATION.md).
 
 If the installer cannot run, follow [manual installation and removal](Docs/MANUAL-INSTALL.md). The release ZIP also includes a copy of the manual guide and the motion controller binding reference in its top folder.
 

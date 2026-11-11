@@ -1,6 +1,6 @@
 # Manual installation for I Know a Guy VR
 
-Use these steps to install the VR mod or flatscreen Companion with File Explorer and Notepad. Choose the **VR** package for headset play or the **Companion** package to see tracked VR movement while playing flatscreen. Install one of the two plugins.
+Use the files in this ZIP to install the VR mod or flatscreen Companion with File Explorer and Notepad. Choose the **VR** package for headset play or the **Companion** package to see tracked VR movement while playing flatscreen. Install one of the two plugins.
 
 ## Prepare the game folder
 
@@ -10,11 +10,11 @@ Use these steps to install the VR mod or flatscreen Companion with File Explorer
 
 ## Set up BepInEx for either package
 
-If you already have the exact BepInEx build below working with this game, keep it and proceed to the plugin steps. You can check the version in the first lines of `BepInEx/LogOutput.log` if it exists. If another loader or BepInEx version is installed, resolve the conflict before copying anything over it.
+The release ZIP includes BepInEx **6.0.0-be.785+6abdba4** for Windows x64 and the **6000.3.21** Unity libraries. All source paths below start in the extracted release folder. A working installation of this exact BepInEx build can reuse its existing loader files. Keep your existing configuration. If a different loader is installed, resolve the conflict before replacing its files.
 
-1. Download and extract [BepInEx 6.0.0-be.785+6abdba4 for Unity IL2CPP on Windows x64](https://builds.bepinex.dev/projects/bepinex_be/785/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.785%2B6abdba4.zip).
-2. Copy the extracted `BepInEx` and `dotnet` folders and the files `winhttp.dll`, `doorstop_config.ini`, and `.doorstop_version` into the game folder. These belong next to `I Know a Guy.exe`. Leave the game's own files, including its changelog, in place.
-3. Open `BepInEx` in the game folder and create a `plugins` folder if it is missing.
+1. Copy `payload/dotnet`, `payload/winhttp.dll`, and `payload/.doorstop_version` into the game folder. Copy `payload/doorstop_config.ini` if the game folder does not already have a working BepInEx configuration file with that name.
+2. Open or create `BepInEx` inside the game folder. Copy the `core` folder from `payload/BepInEx` into it and create a `plugins` folder if needed.
+3. Copy `payload/BepInEx/unity-libs/6000.3.21.zip` to the game's `BepInEx/unity-libs` folder. Create the folder if it is missing. Leave the inner ZIP intact. BepInEx reads it on first launch with its default configuration.
 
 ## Install the Companion for flatscreen play
 
@@ -22,18 +22,16 @@ From the extracted Companion package, copy `payload/BepInEx/plugins/IKnowAGuyVR.
 
 ## Install the VR mod
 
-1. Download [Unity OpenXR 1.17.1](https://download.packages.unity.com/com.unity.xr.openxr/-/com.unity.xr.openxr-1.17.1.tgz). Open the downloaded `.tgz` in an archive app that supports GZIP and TAR, such as [7-Zip](https://www.7-zip.org/). Open the inner `.tar` and extract its `package` folder somewhere outside the game folder.
-2. Copy the files in this table. Create any missing destination folders inside the game folder. If a native OpenXR DLL already exists from another setup and you cannot confirm it is the same version, resolve the conflict before replacing it.
+1. Copy the bundled Unity OpenXR **1.17.1** files and the VR plugin from the paths below. Create missing destination folders inside the game folder. If an OpenXR DLL already exists from another setup and you cannot confirm it matches the bundled file, resolve that conflict first.
 
-| File in the extracted download | Destination inside the game folder |
+| File in the extracted release | Destination inside the game folder |
 | --- | --- |
-| Mod ZIP: `payload/BepInEx/plugins/IKnowAGuyVR.SubsystemProbe.dll` | `BepInEx/plugins/` |
-| Mod ZIP: `payload/I Know a Guy_Data/UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json` | `I Know a Guy_Data/UnitySubsystems/UnityOpenXR/` |
-| Unity download: `package/Runtime/windows/x64/UnityOpenXR.dll` | `I Know a Guy_Data/Plugins/x86_64/` |
-| Unity download: `package/RuntimeLoaders/windows/x64/openxr_loader.dll` | `I Know a Guy_Data/Plugins/x86_64/` |
-| Unity download: `package/LICENSE.md` and `package/Third Party Notices.md` | `.IKnowAGuyVR/licenses/` |
+| `payload/BepInEx/plugins/IKnowAGuyVR.SubsystemProbe.dll` | `BepInEx/plugins/` |
+| `payload/I Know a Guy_Data/UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json` | `I Know a Guy_Data/UnitySubsystems/UnityOpenXR/` |
+| `payload/I Know a Guy_Data/Plugins/x86_64/UnityOpenXR.dll` | `I Know a Guy_Data/Plugins/x86_64/` |
+| `payload/I Know a Guy_Data/Plugins/x86_64/openxr_loader.dll` | `I Know a Guy_Data/Plugins/x86_64/` |
 
-3. Back up `I Know a Guy_Data/boot.config`. Open the original in Notepad and add the line below at the end. Use **Save** to keep the filename `boot.config`.
+2. Back up `I Know a Guy_Data/boot.config`. Open the original in Notepad and add the line below at the end. Use **Save** to keep the filename `boot.config`.
 
    ```text
    xrsdk-pre-init-library=UnityOpenXR
@@ -43,7 +41,7 @@ From the extracted Companion package, copy `payload/BepInEx/plugins/IKnowAGuyVR.
 
 ## First launch and updates
 
-For VR, ready your headset and selected OpenXR runtime. Launch normally through Steam. Leave the first launch running while BepInEx downloads the Unity libraries and generates its local interop files. For VR, open **Settings > VR** after startup.
+For VR, ready your headset and selected OpenXR runtime. Launch normally through Steam. Leave the first launch running while BepInEx generates its interop files from the bundled libraries and the installed game. For VR, open **Settings > VR** after startup.
 
 For updates, close the game and back up the current plugin and any other files you replace. If the new package specifies the same game build and dependencies, copy its plugin and, for VR, its subsystem manifest to the same locations above. Leave `BepInEx/config` in place to keep your preferences.
 

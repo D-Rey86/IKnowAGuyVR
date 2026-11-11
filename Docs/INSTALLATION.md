@@ -7,7 +7,7 @@ Use the **VR** package for playing in VR. Use the **Companion** package only for
 - Windows x64, Direct3D 11, and a purchased copy of the supported game build.
 - Steam app **4173620**, build **25861408**, Unity **6000.3.21f1**. The installer checks the exact game and engine binary hashes, not just a version label.
 - For VR: a working PCVR headset and its selected OpenXR runtime. Standalone headset installation is not supported.
-- Internet access for initial dependency downloads and BepInEx's first-run interop generation.
+- One release ZIP for your selected package. It contains the mod and the required loader files.
 
 If the installer cannot run, follow the [manual installation guide](MANUAL-INSTALL.md). It covers both packages using File Explorer, an archive app, and a text editor.
 
@@ -15,8 +15,8 @@ If the installer cannot run, follow the [manual installation guide](MANUAL-INSTA
 
 1. Close the game. In Steam, open the game's installed files location and copy the folder path containing `I Know a Guy.exe`.
 2. Extract the entire mod ZIP into a separate folder. Do not copy just the plugin for a fresh install.
-3. Run `Install.cmd`, paste the game folder path when prompted, and wait for the completion message. The installer downloads the pinned BepInEx and, for VR, Unity OpenXR dependencies. It checks hashes before modifying the game.
-4. Connect your headset and ready your chosen OpenXR runtime, then launch the game normally through Steam. The first launch can take longer while BepInEx downloads Unity libraries and generates interop assemblies. Let that finish.
+3. Run `Install.cmd`, paste the game folder path when prompted, and wait for the completion message. The installer uses the dependency files inside the ZIP. It checks hashes before modifying the game.
+4. Connect your headset and ready your chosen OpenXR runtime, then launch the game normally through Steam. The first launch can take longer while BepInEx generates interop assemblies from the installed game and bundled libraries. Let that finish.
 5. Open **Settings > VR**. Set turning, locomotion, dominant hand, seated height, belt placement, and wrist size as desired.
 
 The installer preserves saves and existing mod settings, adds only the required XR pre-init line to `boot.config`, and does not change graphics-job flags or the system OpenXR selection. It refuses conflicting loader binaries or an unsupported game version. It never launches the game itself.

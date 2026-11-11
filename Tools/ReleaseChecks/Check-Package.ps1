@@ -1,7 +1,7 @@
 #requires -Version 5.1
 [CmdletBinding()]
 param([Parameter(Mandatory)][string]$PackagePath,[Parameter(Mandatory)][string]$ReferenceGame,
-      [Parameter(Mandatory)][string]$WorkRoot,[Parameter(Mandatory)][string]$DependencyCache)
+      [Parameter(Mandatory)][string]$WorkRoot)
 $ErrorActionPreference='Stop'
 if(Test-Path -LiteralPath $WorkRoot){throw 'Choose a fresh fixture root.'}
 $package=(Resolve-Path -LiteralPath $PackagePath).Path
@@ -23,7 +23,7 @@ function Fixture([string]$Name){
     [IO.File]::WriteAllText((Join-Path $dir 'BepInEx/config/iknowaguyvr.subsystemprobe.cfg'),"[Gameplay]`r`nLeftHanded = true`r`n")
     return $dir
 }
-function Run([string]$Action,[string]$Dir){& $script -Action $Action -GamePath $Dir -DependencyCache $DependencyCache | Out-Host}
+function Run([string]$Action,[string]$Dir){& $script -Action $Action -GamePath $Dir | Out-Host}
 function Reject([scriptblock]$Call,[string]$Match,[string]$Label){
     $errorText=$null;try{& $Call}catch{$errorText=$_.Exception.Message}
     Assert ($errorText -and $errorText -match $Match) "$Label ($errorText)"
@@ -32,6 +32,7 @@ $game=Fixture 'clean';$boot=Join-Path $game 'I Know a Guy_Data/boot.config'
 $original=Hash $boot;$settings=Hash (Join-Path $game 'BepInEx/config/iknowaguyvr.subsystemprobe.cfg')
 $plugin=Join-Path $game ('BepInEx/plugins/'+$manifest.Plugin)
 Run Install $game
+Assert ((Hash (Join-Path $game 'BepInEx/unity-libs/6000.3.21.zip')) -eq ($manifest.Payload|Where-Object Path -eq 'BepInEx/unity-libs/6000.3.21.zip').SHA256) 'First-launch Unity libraries installed from the ZIP'
 Assert ((Hash $plugin) -eq ($manifest.Payload|Where-Object Path -eq ('BepInEx/plugins/'+$manifest.Plugin)).SHA256) 'Clean install has exact shipping plugin'
 Assert ((Hash (Join-Path $game 'BepInEx/config/iknowaguyvr.subsystemprobe.cfg')) -eq $settings) 'Settings preserved byte for byte'
 Assert ((Get-Content $boot -Raw) -match 'custom-setting=keep') 'Unrelated boot settings preserved'
@@ -73,7 +74,7 @@ if($manifest.Role -eq 'VR'){
 $corrupt=Join-Path $work 'corrupt-package';Copy-Item -LiteralPath $package -Destination $corrupt -Recurse
 [IO.File]::AppendAllText((Join-Path $corrupt ('payload/BepInEx/plugins/'+$manifest.Plugin)),'corrupt')
 $target=Fixture 'bad-package'
-Reject {& (Join-Path $corrupt 'Manage-Mod.ps1') -GamePath $target -DependencyCache $DependencyCache} 'Package checksum mismatch' 'Corrupt package rejected'
+Reject {& (Join-Path $corrupt 'Manage-Mod.ps1') -GamePath $target} 'Package checksum mismatch' 'Corrupt package rejected'
 Assert (!(Test-Path (Join-Path $target 'BepInEx/plugins'))) 'Corrupt package leaves no plugin'
 # A write failure after earlier files were installed must restore the original state.
 $locked=Fixture 'locked-write';$lockedBoot=Join-Path $locked 'I Know a Guy_Data/boot.config'

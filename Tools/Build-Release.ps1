@@ -1,10 +1,11 @@
 #requires -Version 5.1
 [CmdletBinding()]
 param([Parameter(Mandatory)][ValidatePattern('^[a-z0-9.-]+$')][string]$Tag,
-      [string]$GameDir)
+      [string]$GameDir,[string]$DependencyCache)
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
 if(!$GameDir){$GameDir=Join-Path $root 'Builds/CurrentGameXR'}
+if(!$DependencyCache){$DependencyCache=Join-Path $root 'Tools/Downloads/release-dependencies'}
 $output=Join-Path $root ('Builds/Releases/'+$Tag)
 if(Test-Path -LiteralPath $output){throw 'Choose a new tag. Existing packages are immutable.'}
 $game=(Resolve-Path -LiteralPath $GameDir).Path
@@ -16,6 +17,23 @@ foreach($m in [regex]::Matches($contract,'\("([^"]+\.dll)", "([A-F0-9]{64})"\)')
     if((Get-FileHash -LiteralPath (Join-Path $game $m.Groups[1].Value)).Hash -ne $m.Groups[2].Value){throw 'Build references do not match the supported game.'}
 }
 if($gameBinaries.Count -ne 2){throw 'Could not read the exact game binary contract.'}
+$deps=Get-Content -LiteralPath (Join-Path $root 'Release/dependencies.json') -Raw|ConvertFrom-Json
+function Get-VerifiedDependency($Dependency){
+    $path=Join-Path $DependencyCache $Dependency.Archive
+    if(!(Test-Path -LiteralPath $path -PathType Leaf)){throw "Missing build input $($Dependency.Archive) in $DependencyCache"}
+    if((Get-FileHash -LiteralPath $path).Hash -ne $Dependency.SHA256){throw "Dependency checksum mismatch: $path"}
+    return (Resolve-Path -LiteralPath $path).Path
+}
+$bepDir=Join-Path $output 'dependency-stage/bep'
+Expand-Archive -LiteralPath (Get-VerifiedDependency $deps.BepInEx) -DestinationPath $bepDir
+$unityLibs=Get-VerifiedDependency $deps.UnityBaseLibraries
+$xrDir=Join-Path $output 'dependency-stage/xr'
+New-Item -ItemType Directory -Path $xrDir -Force|Out-Null
+& tar.exe -xzf (Get-VerifiedDependency $deps.OpenXR) -C $xrDir 'package/Runtime/windows/x64/UnityOpenXR.dll' 'package/RuntimeLoaders/windows/x64/openxr_loader.dll' 'package/LICENSE.md' 'package/Third Party Notices.md'
+if($LASTEXITCODE -ne 0){throw 'Could not extract Unity OpenXR build inputs.'}
+$provider=Join-Path $xrDir 'package/Runtime/windows/x64/UnityOpenXR.dll'
+$loader=Join-Path $xrDir 'package/RuntimeLoaders/windows/x64/openxr_loader.dll'
+if((Get-FileHash -LiteralPath $provider).Hash -ne $deps.OpenXR.ProviderSHA256 -or (Get-FileHash -LiteralPath $loader).Hash -ne $deps.OpenXR.LoaderSHA256){throw 'Unexpected OpenXR binary identity.'}
 $artifacts=@()
 foreach($role in @('VR','Companion')){
     $project=if($role -eq 'VR'){'SubsystemProbe'}else{'VRCompanion'}
@@ -31,10 +49,19 @@ foreach($role in @('VR','Companion')){
     $plugins=Join-Path $payload 'BepInEx/plugins'
     New-Item -ItemType Directory -Path $plugins -Force|Out-Null
     Copy-Item -LiteralPath (Join-Path $build $dll) -Destination $plugins
+    Copy-Item -LiteralPath (Join-Path $bepDir 'BepInEx/core') -Destination (Join-Path $payload 'BepInEx') -Recurse
+    Copy-Item -LiteralPath (Join-Path $bepDir 'dotnet') -Destination $payload -Recurse
+    foreach($name in @('winhttp.dll','.doorstop_version','doorstop_config.ini')){Copy-Item -LiteralPath (Join-Path $bepDir $name) -Destination $payload}
+    $libsDir=Join-Path $payload 'BepInEx/unity-libs'
+    New-Item -ItemType Directory -Path $libsDir|Out-Null
+    Copy-Item -LiteralPath $unityLibs -Destination $libsDir
     if($role -eq 'VR'){
         $manifests=Join-Path $payload 'I Know a Guy_Data/UnitySubsystems/UnityOpenXR'
         New-Item -ItemType Directory -Path $manifests -Force|Out-Null
         Copy-Item -LiteralPath (Join-Path $root 'Release/UnitySubsystemsManifest.json') -Destination $manifests
+        $native=Join-Path $payload 'I Know a Guy_Data/Plugins/x86_64'
+        New-Item -ItemType Directory -Path $native -Force|Out-Null
+        Copy-Item -LiteralPath $provider,$loader -Destination $native
     }
     foreach($name in @('Manage-Mod.ps1','dependencies.json')){Copy-Item -LiteralPath (Join-Path $root "Release/$name") -Destination $package}
     foreach($name in @('README.md','LICENSE','THIRD-PARTY-NOTICES.md')){Copy-Item -LiteralPath (Join-Path $root $name) -Destination $package}
@@ -42,6 +69,14 @@ foreach($role in @('VR','Companion')){
     Copy-Item -LiteralPath (Join-Path $root 'Docs/MANUAL-INSTALL.md') -Destination $package
     Copy-Item -LiteralPath (Join-Path $root 'Docs/CONTROLS.md') -Destination (Join-Path $package 'MOTION-CONTROLLER-BINDINGS.md')
     Copy-Item -LiteralPath (Join-Path $root 'LICENSES') -Destination $package -Recurse
+    $licenses=Join-Path $package 'LICENSES'
+    foreach($name in @('BepInEx-LICENSE.txt','BepInEx-source.zip','UnityDoorstop-LICENSE.txt','UnityDoorstop-source.zip','dotnet-LICENSE.txt','dotnet-THIRD-PARTY-NOTICES.txt')){
+        Copy-Item -LiteralPath (Join-Path $DependencyCache $name) -Destination $licenses
+    }
+    if($role -eq 'VR'){
+        Copy-Item -LiteralPath (Join-Path $xrDir 'package/LICENSE.md') -Destination (Join-Path $licenses 'Unity-OpenXR-LICENSE.md')
+        Copy-Item -LiteralPath (Join-Path $xrDir 'package/Third Party Notices.md') -Destination (Join-Path $licenses 'Unity-OpenXR-Third-Party-Notices.md')
+    }
     foreach($action in @('Install','Rollback','Uninstall','Disable','Enable')){
         $cmd="@echo off`r`npowershell.exe -NoProfile -ExecutionPolicy Bypass -File `"%~dp0Manage-Mod.ps1`" -Action $action`r`nif errorlevel 1 echo Operation failed. See the message above.`r`npause`r`n"
         [IO.File]::WriteAllText((Join-Path $package ($action+'.cmd')),$cmd,[Text.Encoding]::ASCII)

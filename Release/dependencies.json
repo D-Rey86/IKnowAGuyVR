@@ -5,6 +5,12 @@
     "Archive": "bepinex-785.zip",
     "SHA256": "2A7CBF74D26ABE4765C3E662DB1721B923BAC39849EBFEF2CA5DC7DE7E2D9B7F"
   },
+  "UnityBaseLibraries": {
+    "Version": "6000.3.21",
+    "Url": "https://unity.bepinex.dev/libraries/6000.3.21.zip",
+    "Archive": "6000.3.21.zip",
+    "SHA256": "D836329482E33EC5F63A842AA1967CEF467A75952B81B7D3D08AA0E7542EE67F"
+  },
   "OpenXR": {
     "Version": "1.17.1",
     "Url": "https://download.packages.unity.com/com.unity.xr.openxr/-/com.unity.xr.openxr-1.17.1.tgz",

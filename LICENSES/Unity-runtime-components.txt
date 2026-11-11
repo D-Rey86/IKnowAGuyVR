@@ -1,0 +1,18 @@
+Bundled Unity components
+
+The Unity managed base libraries are included for first-launch interop generation.
+The Unity OpenXR provider and loader are included in the VR package for native
+stereo and input integration. These are integrated dependencies for use inside
+the supported game.
+
+Unity components retain their own copyright and license terms. The mod MIT
+license covers its original source code.
+
+Unity Editor Software Terms
+https://unity.com/legal/editor-terms-of-service/software
+
+Unity Package Distribution License
+https://unity.com/legal/licenses/unity-package-distribution-license
+
+The Unity OpenXR package LICENSE.md and Third Party Notices.md accompany the
+VR package. Its Khronos OpenXR loader is covered by the Apache 2.0 notice.

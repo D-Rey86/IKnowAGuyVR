@@ -8,6 +8,6 @@ namespace IKnowAGuyVR.Companion;
 [BepInDependency("iknowaguyvr.subsystemprobe",BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class Plugin : BasePlugin
 {
-    internal const string Version="1.0.0";
+    internal const string Version="1.0.1";
     public override void Load()=>NetworkPoseRuntime.Initialize(false,message=>Log.LogInfo(message));
 }
