@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a VR, installation or companion issue
+title: "[Bug] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe expected behavior, actual behavior, and reproduction steps if known.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Mod and game versions
+    validations:
+      required: true
+  - type: textarea
+    id: system
+    attributes:
+      label: Headset, runtime, GPU and other mods
+      description: Include motion/gamepad, handedness, seated and UI settings if relevant. For multiplayer include host and receiver packages.
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostic report and evidence
+      description: Attach a reviewed ZIP from Settings > VR > Support, logs, or a short video. Nothing is uploaded automatically. Review optional logs for private information before sharing.
+  - type: textarea
+    id: crash
+    attributes:
+      label: For crashes or frozen output
+      description: Did only the headset freeze, did the monitor also freeze, and did the game exit by itself or during quitting? Preserve logs before restarting when possible.

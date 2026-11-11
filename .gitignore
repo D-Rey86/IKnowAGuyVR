@@ -1,0 +1,33 @@
+# Generated builds, caches, local tools, and copyrighted game material.
+Builds/
+Backups/
+Evidence/
+GameReferences/
+Tools/Ghidra/ghidra_*/
+Tools/Ghidra/jdk21/
+Tools/Ghidra/projects/
+Tools/Ghidra/*.txt
+Tools/Ghidra/*.log
+UnityVRProject/Library/
+UnityVRProject/Temp/
+UnityVRProject/Logs/
+UnityVRProject/obj/
+UnityVRProject/UserSettings/
+# Isolated matching-editor clone; original source and reproduction steps are tracked.
+UnityVRProjectCurrent/
+Tools/Downloads/
+Tools/ReferenceSource/
+Tools/XrSimCapture/
+**/bin/
+**/obj/
+*.log
+*.zip
+*.7z
+*.exe
+*.dll
+*.pdb
+*.mdb
+*.db
+*.db.lock
+*.gpr
+*.rep/

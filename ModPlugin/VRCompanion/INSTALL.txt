@@ -1,0 +1,19 @@
+I Know a Guy VR Companion
+
+For flatscreen players who want to see tracked VR movement. The full VR mod
+already includes this functionality; install only one package per player.
+Use the Companion release package. For manual setup and removal, open
+MANUAL-INSTALL.md in the extracted package. Docs/INSTALLATION.md covers
+the installer, and Docs/COMPATIBILITY.md lists the supported game build.
+
+The host must install either VR or Companion, and every recipient who wants
+to see tracked movement needs either package. Unmodified recipients retain
+normal native animation. Protocol 1; incompatible peers fall back safely.
+
+This companion does not start OpenXR, require a headset, or change controls.
+Do not copy VR pre-init settings or XR files into a flatscreen setup.
+Two- and three-client local tests passed. Internet/Steam lobby behavior and
+all possible avatars/held items have not been fully verified.
+
+Run Uninstall.cmd with the game closed to remove the companion plugin.
+Shared BepInEx files, settings and saves are preserved.

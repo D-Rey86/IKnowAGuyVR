@@ -1,0 +1,16 @@
+{
+  "BepInEx": {
+    "Version": "6.0.0-be.785+6abdba4",
+    "Url": "https://builds.bepinex.dev/projects/bepinex_be/785/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.785%2B6abdba4.zip",
+    "Archive": "bepinex-785.zip",
+    "SHA256": "2A7CBF74D26ABE4765C3E662DB1721B923BAC39849EBFEF2CA5DC7DE7E2D9B7F"
+  },
+  "OpenXR": {
+    "Version": "1.17.1",
+    "Url": "https://download.packages.unity.com/com.unity.xr.openxr/-/com.unity.xr.openxr-1.17.1.tgz",
+    "Archive": "openxr-1.17.1.tgz",
+    "SHA256": "E8020F098AF243204688C31ED87927E29EA703020928930FE22DDCD2DC704240",
+    "ProviderSHA256": "4AD538766471232B219BA1D5227F8F09ECD2894CDD5B6901BA1010BC4EB602E3",
+    "LoaderSHA256": "F7384429C16288D9C2C123ACFCA1E040C9CEC6C5484A3F5A5107D6AA32BA57E8"
+  }
+}

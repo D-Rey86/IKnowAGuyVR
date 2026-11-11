@@ -1,0 +1,6 @@
+<Project>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)*.cs" Link="Networking/%(Filename)%(Extension)" />
+    <Reference Include="Unity.Collections"><HintPath>$(GameDir)/BepInEx/interop/Unity.Collections.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

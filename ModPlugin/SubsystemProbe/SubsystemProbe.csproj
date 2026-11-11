@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>IKnowAGuyVR.SubsystemProbe</AssemblyName>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GameDir Condition="'$(GameDir)' == ''">$(MSBuildThisFileDirectory)..\..\Builds\CurrentGameXR</GameDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(DiagnosticBuild)' == 'true'">
+    <DefineConstants>$(DefineConstants);IKAG_DIAGNOSTICS</DefineConstants>
+  </PropertyGroup>
+  <Import Project="../NetworkPoseShared/NetworkPoseShared.props" />
+  <ItemGroup Condition="'$(DiagnosticBuild)' != 'true'">
+    <Compile Remove="ControlRemapAudit.cs" />
+    <Compile Remove="JournalBeltAudit.cs" />
+    <Compile Remove="BoxIdentifierAudit.cs" />
+    <Compile Remove="RuntimeIssueAudit.cs" />
+    <Compile Remove="SauceDistanceAudit.cs" />
+    <Compile Remove="DayTransitionAudit.cs" />
+    <Compile Remove="VrSettingsAudit.cs" />
+    <Compile Remove="VrGameplayAudit.cs" />
+    <Compile Remove="VrMenuInteractionAudit.cs" />
+    <Compile Remove="HandContactAudit.cs" />
+    <Compile Remove="PizzaBoxAudit.cs" />
+    <Compile Remove="OvenCycleAudit.cs" />
+    <Compile Remove="OrderSwitchAudit.cs" />
+    <Compile Remove="HandoffAudit.cs" />
+    <Compile Remove="ItemPoseAudit.cs" />
+    <Compile Remove="NaturalGripAudit.cs" />
+    <Compile Remove="NaturalCatalogueAudit.cs" />
+    <Compile Remove="ShovelAudit.cs" />
+    <Compile Remove="ShovelPlayAudit.cs" />
+    <Compile Remove="ShovelPerfAudit.cs" />
+    <Compile Remove="ToolNativeAudit.cs" />
+    <Compile Remove="ToolControlAudit.cs" />
+    <Compile Remove="PhysicalItemAudit.cs" />
+    <Compile Remove="CarryCatalogueAudit.cs" />
+    <Compile Remove="MeleeShapeAudit.cs" />
+    <Compile Remove="FingerControlAudit.cs" />
+    <Compile Remove="CameraAspectAudit.cs;RenderDocCapture.cs;TrialReadback.cs" />
+    <Compile Remove="WorldPressSurvey.cs" />
+    <Compile Remove="WorldPressAudit.cs" />
+    <Compile Remove="GripInteractionAudit.cs;DistanceGripAudit.cs;PizzaShelfAudit.cs;ObjectGrabAudit.cs;ContextHudAudit.cs;WristOrientationAudit.cs;ImmersiveHudAudit.cs;HandleAssetAudit.cs;InteractionAudit.cs;ForgeryAudit.cs;PolishAudit.cs;CashAudit.cs;RegisterArcadeAudit.cs;KeyboardAudit.cs;ShadyUiAudit.cs;GripPunchAudit.cs" />
+    <Compile Remove="PlacementReticleAudit.cs" />
+    <Compile Remove="UiInputAudit.cs;PitchInputControl.cs;UiScenarioControl.cs;GameplayRenderAudit.cs;PoseStabilityControl.cs;HeadAimAudit.cs;HeadPipelineAudit.cs;MotionRigAudit.cs;MotionTransportAudit.cs;MotionAcceptanceAudit.cs;FramePerformanceAudit.cs;MotionWorldAudit.cs;MotionMenuAudit.cs;MotionActionAudit.cs;MotionFocusedAudit.cs;MotionBodyAudit.cs;MotionPlacementAudit.cs;MotionRegressionAudit.cs;MachineExitAudit.cs;OpenXRFrameAudit.cs;BodyAlignmentAudit.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.InputModule" Condition="'$(DiagnosticBuild)' == 'true'"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.InputModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="OccaSoftware.Buto.Runtime"><HintPath>$(GameDir)\BepInEx\interop\OccaSoftware.Buto.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="OccaSoftware.LSPP.Runtime"><HintPath>$(GameDir)\BepInEx\interop\OccaSoftware.LSPP.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.VideoModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.VideoModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.ScreenCaptureModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.TextRenderingModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AIModule" Condition="'$(DiagnosticBuild)' == 'true'"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.AIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AudioModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.AudioModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AnimationModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.AnimationModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UI"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.InputSystem"><HintPath>$(GameDir)\BepInEx\interop\Unity.InputSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Assembly-CSharp"><HintPath>$(GameDir)\BepInEx\interop\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.Netcode.Runtime"><HintPath>$(GameDir)\BepInEx\interop\Unity.Netcode.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UIModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.UIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UIElementsModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.UIElementsModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx.Core"><HintPath>$(GameDir)\BepInEx\core\BepInEx.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MonoMod.RuntimeDetour"><HintPath>$(GameDir)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx.Unity.Common"><HintPath>$(GameDir)\BepInEx\core\BepInEx.Unity.Common.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx.Unity.IL2CPP"><HintPath>$(GameDir)\BepInEx\core\BepInEx.Unity.IL2CPP.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(GameDir)\BepInEx\core\Il2CppInterop.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2Cppmscorlib"><HintPath>$(GameDir)\BepInEx\interop\Il2Cppmscorlib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.SubsystemsModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.SubsystemsModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.XRModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.XRModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime"><HintPath>$(GameDir)\BepInEx\interop\Unity.RenderPipelines.Core.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Runtime"><HintPath>$(GameDir)\BepInEx\interop\Unity.RenderPipelines.Universal.Runtime.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
+
